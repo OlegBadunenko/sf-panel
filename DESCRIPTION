@@ -9,8 +9,8 @@ Authors@R: c(
   )
 URL: https://olegbadunenko.github.io/sf-panel-3rd-gen
 Maintainer: The package maintainer <Oleg.Badunenko@brunel.ac.uk>
-Description: Stata commands to estimate the panel data stochastic 
-    frontier models of the third generation
+Description: Stata command to estimate the panel data stochastic 
+    frontier models
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
