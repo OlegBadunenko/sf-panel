@@ -1,0 +1,29 @@
+title: StataSFpanel
+
+template:
+  params:
+    bootswatch: spacelab
+
+authors:
+  Oleg Badunenko:
+    href: https://OlegBadunenko.github.io/
+
+navbar:
+  title: "xtsf"
+  left:
+    - text: "User Guide"
+      href: book-examples.html
+    - text: "News/Changelog"
+      href: news/index.html
+
+articles:
+  - title: User Guide
+    desc: >
+      The article guides through the code to estimate the model.
+    contents:
+    - book-examples
+
+home:
+  links:
+    - text: Source Code
+      href: https://github.com/OlegBadunenko/sf-panel
