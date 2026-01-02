@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Panel data stochastic frontier models">
-<meta property="og:description" content="Stata commands to estimate the panel data stochastic frontier models of the third generation">
+<meta property="og:description" content="Stata command to estimate the panel data stochastic frontier models">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -67,8 +67,7 @@
 <blockquote>
 <p>Cite codes usage as shown <a href="https://olegbadunenko.github.io/sf-panel/authors.html" class="external-link">here</a>.</p>
 </blockquote>
-<p>Stata commands to estimate the panel data stochastic frontier models of the first and second generation written and maintained by Oleg Badunenko (<a href="mailto:oleg.badunenko@brunel.ac.uk" class="email">oleg.badunenko@brunel.ac.uk</a>). The details are discussed in</p>
-<p>Stochastic frontier analysis in Stata: using existing and coding new commands in “Handbook of Research Methods and Applications in Empirical Microeconomics” (edited by Nigar Hashimzade and Michael A. Thornton), 2021, Chapter 17, <strong><em>Edward Elgar Publishing</em></strong>, <a href="https://doi.org/10.4337/9781788976480.00027" class="external-link">DOI <img src="reference/figures/doi.png" width="12" height="12"></a></p>
+<p>Stata commands to estimate the GTRE panel data stochastic frontier models written and maintained by Oleg Badunenko (<a href="mailto:oleg.badunenko@brunel.ac.uk" class="email">oleg.badunenko@brunel.ac.uk</a>).</p>
 <blockquote>
 <p>Codes to replicate the results in the chapter can be found <a href="https://olegbadunenko.github.io/sf-panel/book-examples.html" class="external-link">here</a>.</p>
 </blockquote>
@@ -83,7 +82,7 @@
 <p>which provides tools for installation. The package can be installed directly by typing</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>github install OlegBadunenko/sf-panel</span></code></pre></div>
 <p>The package can be installed without the <em>github</em> command:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>net install xtsf3g, from(<span class="st">"https://raw.githubusercontent.com/OlegBadunenko/sf-panel/main"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode stata"><code class="sourceCode stata"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>net install xtsf, from(<span class="st">"https://raw.githubusercontent.com/OlegBadunenko/sf-panel/main"</span>)</span></code></pre></div>
 </div>
 <div class="section level1">
 <h1 id="help">Help<a class="anchor" aria-label="anchor" href="#help"></a>

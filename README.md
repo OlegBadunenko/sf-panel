@@ -4,15 +4,8 @@
 
 > Cite codes usage as shown [here](https://olegbadunenko.github.io/sf-panel/authors.html).
 
-Stata commands to estimate the panel data stochastic frontier models of
-the first and second generation written and maintained by Oleg Badunenko
-(<oleg.badunenko@brunel.ac.uk>). The details are discussed in
-
-Stochastic frontier analysis in Stata: using existing and coding new
-commands in “Handbook of Research Methods and Applications in Empirical
-Microeconomics” (edited by Nigar Hashimzade and Michael A. Thornton),
-2021, Chapter 17, ***Edward Elgar Publishing***, [DOI
-<img src="man/figures/doi.png"  width="12" height="12">](https://doi.org/10.4337/9781788976480.00027)
+Stata commands to estimate the GTRE panel data stochastic frontier models written and maintained by Oleg Badunenko
+(<oleg.badunenko@brunel.ac.uk>).
 
 > Codes to replicate the results in the chapter can be found [here](https://olegbadunenko.github.io/sf-panel/book-examples.html).
 
@@ -39,7 +32,7 @@ github install OlegBadunenko/sf-panel
 The package can be installed without the *github* command:
 
 ```stata
-net install xtsf3g, from("https://raw.githubusercontent.com/OlegBadunenko/sf-panel/main")
+net install xtsf, from("https://raw.githubusercontent.com/OlegBadunenko/sf-panel/main")
 ```
 
 # Help
