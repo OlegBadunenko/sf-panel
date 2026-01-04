@@ -785,12 +785,12 @@ mata:
 			// 	exit()
 // 			111212
 // 			stata("mat list _lnls_192837465")
-// 			stata(`"plugin call xtsfC, _nthreads_192837465 _prod_192837465 _V_192837465 _U_192837465 _y_192837465 _x_192837465 _zvi_192837465 _vv0zero_192837465 _zui_192837465 _vu0zero_192837465 _zvit_192837465 _zuit_192837465 _vuizero_192837465 _ids_192837465 _idvar_192837465 _t1_192837465 _nt_192837465 _n_192837465 _r_192837465 _idlenmax_192837465 _kb_192837465 _kv0_192837465 _ku0_192837465 _kv_192837465 _ku_192837465 _grad_192837465 _lnls_192837465 "')
+// 			stata(`"plugin call xtsfC, _nthreads_192837465 _prod_192837465 _V_192837465 _U_192837465 _y_192837465 _x_192837465 _zvi_192837465 _vv0zero_192837465 _zui_192837465 _vu0zero_192837465 _zvit_192837465 _zuit_192837465 _vuizero_192837465 _ids_192837465 _idvar_192837465 _t1_192837465 _nt_192837465 _n_192837465 _r_192837465 _idlenmax_192837465 _kb_192837465 _kv0_192837465 _ku0_192837465 _kv_192837465 _ku_192837465 _lnls_192837465 "')
 // 			111213
 // 			stata("mat list _lnls_192837465")
 			// 	stata("mat list _grad_192837465")
 
-			// 	exit()
+// 				exit()
 
 			/*
 
@@ -1314,7 +1314,8 @@ mata:
 		// 	stata("mat list _t1_192837465")
 		// 	stata("mat dir")
 		// 	stata("sca dir")
-		stata(`"plugin call xtsfC, _nthreads_192837465 _prod_192837465 _V_192837465 _U_192837465 _y_192837465 _x_192837465 _zvi_192837465 _vv0zero_192837465 _zui_192837465 _vu0zero_192837465 _zvit_192837465 _zuit_192837465 _vuizero_192837465 _ids_192837465 _idvar_192837465 _t1_192837465 _nt_192837465 _n_192837465 _r_192837465 _idlenmax_192837465 _kb_192837465 _kv0_192837465 _ku0_192837465 _kv_192837465 _ku_192837465 _grad_192837465 _lnls_192837465 "')
+// 		stata(`"plugin call xtsfC, _nthreads_192837465 _prod_192837465 _V_192837465 _U_192837465 _y_192837465 _x_192837465 _zvi_192837465 _vv0zero_192837465 _zui_192837465 _vu0zero_192837465 _zvit_192837465 _zuit_192837465 _vuizero_192837465 _ids_192837465 _idvar_192837465 _t1_192837465 _nt_192837465 _n_192837465 _r_192837465 _idlenmax_192837465 _kb_192837465 _kv0_192837465 _ku0_192837465 _kv_192837465 _ku_192837465 _grad_192837465 _lnls_192837465 "')
+		stata(`"plugin call xtsfC, _nthreads_192837465 _prod_192837465 _V_192837465 _U_192837465 _y_192837465 _x_192837465 _zvi_192837465 _vv0zero_192837465 _zui_192837465 _vu0zero_192837465 _zvit_192837465 _zuit_192837465 _vuizero_192837465 _ids_192837465 _idvar_192837465 _t1_192837465 _nt_192837465 _n_192837465 _r_192837465 _idlenmax_192837465 _kb_192837465 _kv0_192837465 _ku0_192837465 _kv_192837465 _ku_192837465 _lnls_192837465 "')
 		// 		stata("mat list _lnls_192837465")
 
 		ll    = st_matrix("_lnls_192837465")
@@ -1482,10 +1483,12 @@ if "`os'" == "MAC"{
 					}
 				}
 				else if "`os'" == "WIN"{
-					capture program xtsfC, plugin using ("xtsf-linux.plugin")
+					display "Windows"
+					cd "~/research/coding/c/C_in_Stata"
+					program xtsfC, plugin using ("xtsf-win.plugin")
 				} 
 
-
+// program dir
 
 				// program xtsf, plugin using ("xtsf-mac.plugin")
 
