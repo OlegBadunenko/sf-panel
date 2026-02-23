@@ -1,41 +1,12 @@
 *! version 1.0.0  18Jun2025
 *! version 1.1.0  16Jul2025
+*! version 1.2.0  23Feb2025
 *! author Oleg Badunenko
 
 
 // if(c(MP)){
 //  	set processors 1
 // }
-
-// 		xtsf depvar [indepvars] [if] [in] [, options]
-
-// 		cost
-// 		model
-// 		distribution(hnormal, tnormal)
-// 		eti
-// 		u0imean(varlist[, noconstant])
-// 		u0ilnvariance(varlist[, noconstant])
-// 		vitlnvariance(varlist[, noconstant])
-// 		celessthanone
-// 		level
-
-
-// sfgtrehet <- function(formula, data, subset, it, prod = TRUE,
-//                       v0.het = NULL, vv0.zero = FALSE,
-//                       u0.het = NULL, vu0.zero = FALSE,
-//                       vi.het = NULL,
-//                       ui.het = NULL, vui.zero = FALSE,
-//                       theta0 = NULL,
-//                       simtype = c("halton", "rnorm"), R = 500,
-//                       halton.base = 1, bases.apart = 1,
-//                       simtype_GHK = c("halton", "runif"), R_GHK = 500,
-//                       random.primes = FALSE, scale.coverage = FALSE, shuffle = FALSE,
-//                       method.optim = c('BFGS'),
-//                       lmtol = 1e-5, reltol = 1e-12, maxit = 3501,
-//                       invtol = .Machine$double.eps, n_threads = 1,
-//                       digits = 4, print.level = 2, report.ll = 10,
-//                       only.get.data = FALSE, seed = 17345168,
-//                       get.data = TRUE) { #176348) {
 
 capture program drop xtsf
 program define xtsf, eclass
@@ -268,40 +239,6 @@ program define xtsf, eclass
 			local cnames "`indepvars'"
 		}
 
-		//   //   noise
-		//   if "`vitlnvariance'" != "" {
-		//     local vitlnvarianceN = ""
-		//     foreach lname of local vitlnvariance{
-		//       local vitlnvarianceN = "`vitlnvarianceN' ln[var(vit)]:`lname'"
-		//     }
-		//     if "`vitlnvariancenocns'" == "" {
-		//       local cnames "`cnames' `vitlnvarianceN' ln[var(vit)]:_cons"
-		//     }
-		//     else {
-		//       local cnames "`cnames' `vitlnvarianceN'"
-		//     }
-		//   }
-		//   else {
-		//     local cnames "`cnames' ln[var(vit)]:_cons"
-		//   }
-		//
-		//   //   inefficiency
-		//   if "`uilnvariance'" != "" {
-		//     local uilnvarianceN = ""
-		//     foreach lname of local uilnvariance{
-		//       local uilnvarianceN = "`uilnvarianceN' ln[var(ui)]:`lname'"
-		//     }
-		//     if "`uilnvariancenocns'" == "" {
-		//       local cnames "`cnames' `uilnvarianceN' ln[var(ui)]:_cons"
-		//     }
-		//     else {
-		//       local cnames "`cnames' `uilnvarianceN'"
-		//     }
-		//   }
-		//   else {
-		//     local cnames "`cnames' ln[var(ui)]:_cons"
-		//   }
-
 		// handle error components
 
 		foreach errorcomp in ui uit vi vit {
@@ -321,14 +258,6 @@ program define xtsf, eclass
         local cnames_`errorcomp' "`cnames_`errorcomp'' ln[var(`errorcomp')]:_cons"
 			}
 		}
-
-
-		//   theta0  = 1.0*ols_b \ myScale*olsZv0_b \ myScale*olsZu0_b \ myScale2*olsZv_b \ myScale2*olsZu_b
-
-		// 	1 v_0i
-		// 	2 u_0i
-		// 	3 v_it
-		// 	4 u_it
 
 		local cnames "`cnames' `cnames_vi' `cnames_ui' `cnames_vit' `cnames_uit'"
 		// 	display "`cnames'"
@@ -710,10 +639,6 @@ mata:
 			// 	tymV
 			tymV = invnormal(tymV')
 			st_matrix("_V_192837465", tymV)
-			// 	stata("matrix list _V_192837465")
-			// 	109
-			// 	st_numscalar("_r_192837465")
-			// 	st_numscalar("_haltonb_192837465") + st_numscalar("_basesa_192837465")
 
 			// 	tymU
 			tymU = abs(invnormal(tymU'))
@@ -776,99 +701,6 @@ mata:
 			st_matrix("_grad_192837465", J(nobs, length(theta0), 17))
 			// 	111211
 
-
-			// stata("mat dir")
-			// stata("sca dir")
-
-			// ## try plugin
-
-			// 	exit()
-// 			111212
-// 			stata("mat list _lnls_192837465")
-// 			stata(`"plugin call xtsfC, _nthreads_192837465 _prod_192837465 _V_192837465 _U_192837465 _y_192837465 _x_192837465 _zvi_192837465 _vv0zero_192837465 _zui_192837465 _vu0zero_192837465 _zvit_192837465 _zuit_192837465 _vuizero_192837465 _ids_192837465 _idvar_192837465 _t1_192837465 _nt_192837465 _n_192837465 _r_192837465 _idlenmax_192837465 _kb_192837465 _kv0_192837465 _ku0_192837465 _kv_192837465 _ku_192837465 _lnls_192837465 "')
-// 			111213
-// 			stata("mat list _lnls_192837465")
-			// 	stata("mat list _grad_192837465")
-
-// 				exit()
-
-			/*
-
-					 111214
-					 st_matrix("_lnls_192837465", J(nobs, 1, 17))
-					 stata("mat list _lnls_192837465")
-					 stata(`"plugin call xtsfll, _nthreads_192837465 _prod_192837465 _V_192837465 _U_192837465 _y_192837465 _x_192837465 _zvi_192837465 _vv0zero_192837465 _zui_192837465 _vu0zero_192837465 _zvit_192837465 _zuit_192837465 _vuizero_192837465 _ids_192837465 _idvar_192837465 _t1_192837465 _nt_192837465 _n_192837465 _r_192837465 _idlenmax_192837465 _kb_192837465 _kv0_192837465 _ku0_192837465 _kv_192837465 _ku_192837465 _lnls_192837465 "')
-					 111215
-					 stata("mat list _lnls_192837465")
-
-					 // 	exit()
-
-			*/
-
-			// void gtre_ll_het(
-			//     int *Nthreds,             // 0 done _nthreads_192837465
-			//     double *prod,             // 1 done _prod_192837465
-			//     double *V,                // 2 done _V_192837465
-			//     double *U,                // 3 done _U_192837465
-			//     double *Y,                // 4 done _y_192837465
-			//     double *X,                // 5 done _x_192837465
-			//     double *Zv0,              // 6 done _zvi_192837465
-			//     double *vv0zero,          // 7 done _vv0zero_192837465
-			//     double *Zu0,              // 8 done _zui_192837465
-			//     double *vu0zero,          // 9 done _vu0zero_192837465
-			//     double *Zvi,              // 10 done _zvit_192837465
-			//     double *Zui,              // 11 done _zuit_192837465
-			//     double *vuizero,          // 12 done _vuizero_192837465
-			//     double *ids,              // 13 done _ids_192837465
-			//     double *idvar,            // 14 done _idvar_192837465
-			//     double *theta,            // 15 done _t1_192837465
-			//     int *NT,                  // 16 done _nt_192837465
-			//     int *N,                   // 17 done _n_192837465
-			//     int *R,                   // 18 done _r_192837465
-			//     int *idlenmax,            // 19 done _idlenmax_192837465
-			//     int *Kb,                  // 20 done _kb_192837465
-			//     int *Kv0,                 // 21 done _kv0_192837465
-			//     int *Ku0,                 // 22 done _ku0_192837465
-			//     int *Kvi,                 // 23 done _kv_192837465
-			//     int *Kui,                 // 24 done _ku_192837465
-			//     double *lnls              // 25 done _lnls_192837465
-			// );
-
-			// void gtre_het_grad(
-			//     _nthreads_192837465,       // 0
-			//     _prod_192837465,           // 1
-			//     _V_192837465,              // 2
-			//     _U_192837465,              // 3
-			//     _y_192837465,              // 4
-			//     _x_192837465,              // 5
-			//     _zvi_192837465,            // 6
-			//     _vv0zero_192837465,        // 7
-			//     _zui_192837465,            // 8
-			//     _vu0zero_192837465,        // 9
-			//     _zvit_192837465,           // 10
-			//     _zuit_192837465,           // 11
-			//     _vuizero_192837465,        // 12
-			//     _ids_192837465,            // 13
-			//     _idvar_192837465,          // 14
-			//     _t1_192837465,             // 15
-			//     _nt_192837465,             // 16
-			//     _n_192837465,              // 17
-			//     _r_192837465,              // 18
-			//     _idlenmax_192837465,       // 19
-			//     _kb_192837465,             // 20
-			//     _kv0_192837465,            // 21
-			//     _ku0_192837465,            // 22
-			//     _kv_192837465,             // 23
-			//     _ku_192837465,             // 24
-			//     _grad_192837465            // 25
-			// ) {
-
-
-			// 	technique
-			// 	theta0
-
-			// 	xit[|1,1 \ 2,.|]
-
 			// ## optimize
 
 			// 1233
@@ -903,70 +735,13 @@ mata:
 
 			// 	1239
 
-			// 		myscalars = k, kv0, ku0, kv, ku, Ktheta, nobs, nt, ///
-				// 			st_numscalar("_prod_192837465"), 
-			// 			st_numscalar("_r_192837465"),
-			// 			st_numscalar("_vv0zero_192837465"),
-			// 			st_numscalar("_vu0zero_192837465"),
-			// 			st_numscalar("_vuizero_192837465")
-
-			/*
-					 Initialize optimizer NO pointers
-			*/
-
-			// 		S = optimize_init()
-			// 		optimize_init_evaluator(S, &gtre_ll_het())
-			// 		optimize_init_valueid(S, "log-likelihood")
-			// 		optimize_init_iterid(S, "iter")
-			// 		optimize_init_params(S, theta0)
-			// 		optimize_init_evaluatortype(S, "gf0")
-			// 		optimize_init_technique(S, technique)
-			// 		optimize_init_tracelevel(S, tracelevel)
-			// 		optimize_init_conv_maxiter(S, iter)
-			// 		optimize_init_singularHmethod(S, "hybrid")
-			// 		optimize_init_argument(S, 1, YX)
-			// 		optimize_init_argument(S, 2, zvi)
-			// 		optimize_init_argument(S, 3, zui)
-			// 		optimize_init_argument(S, 4, zvit)
-			// 		optimize_init_argument(S, 5, zuit)
-			// 		optimize_init_argument(S, 6, tymV)
-			// 		optimize_init_argument(S, 7, tymU)
-			// 		optimize_init_argument(S, 8, ids)
-			// 		optimize_init_argument(S, 9, myscalars)
-
-			/*
-					 Initialize optimizer WITH pointers
-			*/
-
-			// 		S = optimize_init()
-			// 		optimize_init_evaluator(S, &gtre_ll_het_p())
-			// 		optimize_init_valueid(S, "log-likelihood")
-			// 		optimize_init_iterid(S, "iter")
-			// 		optimize_init_params(S, theta0)
-			// 		optimize_init_evaluatortype(S, "gf0")
-			// 		optimize_init_technique(S, technique)
-			// 		optimize_init_tracelevel(S, tracelevel)
-			// 		optimize_init_conv_maxiter(S, iter)
-			// 		optimize_init_singularHmethod(S, "hybrid")
-			// 		optimize_init_argument(S, 1, pYX)             // pointer(real matrix) scalar pX
-			// 		optimize_init_argument(S, 2, pzvi)           // pointer(real matrix) scalar pzvi
-			// 		optimize_init_argument(S, 3, pzui)           // pointer(real matrix) scalar pzui
-			// 		optimize_init_argument(S, 4, pzvit)        // pointer(real matrix) scalar pzvit
-			// 		optimize_init_argument(S, 5, pzuit)        // pointer(real matrix) scalar pzuit
-			// 		optimize_init_argument(S, 6, pV)             // pointer(real matrix) scalar pV  
-			// 		optimize_init_argument(S, 7, pU)             // pointer(real matrix) scalar pU
-			// 		optimize_init_argument(S, 8, ids)          // real matrix ids
-			// 		optimize_init_argument(S, 9, myscalars)
-
-			// 		1240
-
-			"The Model is MSLE"
+// 			"The Model is MSLE"
 
 		}
 		else if (model == 42) {
 			"The Model is Full MLE"
 			myscalars = k, kv0, ku0, kv, ku, Ktheta, nobs, nt, ///
-				st_numscalar("_prod_192837465"), 
+			st_numscalar("_prod_192837465"), 
 			st_numscalar("_r_192837465"),
 			st_numscalar("_haltonb_192837465")
 			// 		myscalars
@@ -1028,23 +803,6 @@ mata:
 		}
 
 
-
-		// 		exit()
-
-
-
-		// "bh= theta0"
-		// bh= theta0
-
-		// bh
-		// k
-		// kv0
-		// ku0
-		// kv
-		// ku
-
-		//   bh
-		//   vh
 		//   211
 		st_matrix(bsname,        bh)
 		// // 	212
@@ -1105,10 +863,6 @@ mata:
 		te_pers_vec = J(nt, 1, .)
 		te_tran_vec = J(nt, 1, .)
 
-
-
-
-
 		for (i = 1; i <= nobs; i++) {
 			// 	"i"
 			// 	i
@@ -1142,23 +896,7 @@ mata:
 			// 		"te_tran_vec"
 			// 		(result[2..(Ti+1)])'
 
-
-			// if(i == 1) {
-			// 	21
-			// 	result1 = e_exp_tu(ei, i, sui2i, svi2i, sv02i[1], su02i[1],
-			//                       1, "halton", 12345, 500, 2, epsilon(1), 0)
-			// 	result2 = condmean_exp(sui2i, svi2i, su02i[1], sv02i[1], ei,
-			// 	st_numscalar("_r_192837465"), st_numscalar("_prod_192837465"))
-			//	
-			// 	22
-			// 	result1, result2, result1 :* result2, result1 :/ result2
-			// 	23
-			// 	te_pers_vec[ids[i,1]..ids[i,2]]
-			// 	24
-			// 	te_tran_vec[ids[i,1]..ids[i,2]]
-			// }
-
-		}
+	}
 
 
 		// exit()
@@ -1221,86 +959,6 @@ mata:
 
 	}
 end
-
-// string scalar bsname, /// 17
-	// string scalar vsname, /// 18
-	// string scalar n1name, /// 19
-	// string scalar nt1name, /// 20
-	// string scalar eff_pers_name, /// 21
-	// string scalar eff_tran_name, /// 22
-	// string scalar technique, /// 23
-	// string scalar iter0, /// 24
-	// string scalar tracelevel, /// 25
-	// string scalar convstatus, /// 26
-	// string scalar level0, /// 27
-	// string scalar rezname, /// 28
-	// string scalar xbname, /// 29
-	// string scalar LLname /// 30
-
-
-// void gtre_het_grad(int *Nthreds,
-// double *prod,
-// double *V, double *U,
-// double *Y, double *X,
-// double *Zv0, double *vv0zero,
-// double *Zu0, double *vu0zero,
-// double *Zvi,
-// double *Zui, double *vuizero,
-// double *ids, double *idvar,
-// double *theta,
-// int *NT, int *N, int *R, int *idlenmax,
-// int *Kb, int *Kv0, int *Ku0, int *Kvi, int *Kui,
-// double *grad){
-
-// Arguments order (based on function signature):
-//  0   int *Nthreds,
-//  1   double *prod,
-//  2   double *V, 
-//  3   double *U,
-//  4   double *Y, 
-//  5   double *X,
-//  6   double *Zv0, 
-//  7   double *vv0zero, (scalar)
-//  8   double *Zu0, 
-//  9   double *vu0zero, (scalar)
-// 10   double *Zvi,
-// 11   double *Zui, 
-// 12   double *vuizero, (scalar)
-// 13   double *ids, 
-// 14   double *idvar,
-// 15   double *theta,
-// 16-25 integer scalars (handled above)
-// 26   double *grad
-// 27   double *lnls (scalar)	
-
-
-// 0	_nthreads_192837465
-// 1	_prod_192837465
-// 2	_V_192837465
-// 3	_U_192837465
-// 4	_y_192837465
-// 5	_x_192837465
-// 6	_zvi_192837465
-// 7	_vv0zero_192837465 (scalar)
-// 8	_zui_192837465
-// 9	_vu0zero_192837465 (scalar)
-// 10	_zvit_192837465
-// 11	_zuit_192837465
-// 12	_vuizero_192837465 (scalar)
-// 13	_ids_192837465
-// 14	_idvar_192837465
-// 15	_t1_192837465
-// 16	_nt_192837465 (scalar)
-// 17	_n_192837465 (scalar)
-// 18	_r_192837465 (scalar)
-// 19	_idlenmax_192837465 (scalar)
-// 20	_kb_192837465 (scalar)
-// 21	_kv0_192837465 (scalar)
-// 22	_ku0_192837465 (scalar)
-// 23	_kv_192837465 (scalar)
-// 24	_ku_192837465 (scalar)
-// 25	_grad_192837465
-// 26	_lnls_192837465
 
 **# xtsf2optimizeC
 
@@ -1446,13 +1104,13 @@ if "`os'" == "MAC"{
 	if "`mac_mach'" == "INT" {
 		// 		di "not ready yet"
 		display "Mac Intel"
-		cd "~/research/coding/c/C_in_Stata"
+// 		cd "~/research/coding/c/C_in_Stata"
 		program xtsfC, plugin using ("xtsf-mac-intel.plugin")
 
 		}
 		else if "`mac_mach'" == "SIL" {
 			display "Mac Silicon"
-			cd "~/research/coding/c/C_in_Stata"
+// 			cd "~/research/coding/c/C_in_Stata"
 			program xtsfC, plugin using ("xtsf-mac-arm.plugin")
 				// 		program xtsfll, plugin using ("xtsf-ll-mac.plugin")
 			}
@@ -1464,12 +1122,12 @@ if "`os'" == "MAC"{
 			if "`mach'" == "MAC"{
 				if "`mac_mach'" == "INT" {
 					display "Mac Intel"
-					cd "~/research/coding/c/C_in_Stata"
+// 					cd "~/research/coding/c/C_in_Stata"
 					program xtsfC, plugin using ("xtsf-mac-intel.plugin")
 					}
 					else if "`mac_mach'" == "SIL" {
 						display "Mac Silicon"
-						cd "~/research/coding/c/C_in_Stata"
+// 						cd "~/research/coding/c/C_in_Stata"
 						program xtsfC, plugin using ("xtsf-mac-arm.plugin")
 							// 		program xtsfll, plugin using ("xtsf-ll-mac.plugin")
 						}
@@ -1484,508 +1142,368 @@ if "`os'" == "MAC"{
 				}
 				else if "`os'" == "WIN"{
 					display "Windows"
-					cd "~/research/coding/c/C_in_Stata"
+// 					cd "~/research/coding/c/C_in_Stata"
 					program xtsfC, plugin using ("xtsf-win.plugin")
 				} 
 
-// program dir
+capture mata mata drop e_exp_tu()
+mata:
 
-				// program xtsf, plugin using ("xtsf-mac.plugin")
-
-				**# e_exp_tu
-
-				// result = e_exp_tu(ei, i, sui2i, svi2i, sv02i[1], su02i[1],
-				//                       1, "halton", 12345, 500, 2, epsilon(1), 0)	
-
-				capture mata mata drop e_exp_tu()
-				mata:
-
-					real vector e_exp_tu(real vector ei, real scalar id, real vector sui2, real vector svi2,
-					real scalar sv02, real scalar su02, real scalar prod,
-					string scalar simtype, real scalar seed, real scalar R,
-					real scalar halton_base, real scalar inv_tol, real scalar print_level) {
-
-						real scalar Ti, do_prod, su02_zero, ghkReLmd, te_max, range_star
-						real matrix A, Sig, V_1, Sig_1, Lmd, R_, CholLmd, mydraws
-						real vector Re, te_it, te_it_alt, te_resi, result
-						real scalar t00, t11, t22, temp
-
-						Ti = rows(ei)
-						do_prod = (prod == 1 ? 1 : -1)
-						A = -1 * do_prod * (I(Ti) , J(Ti, 1, 1))
-
-						Sig = diag(svi2) + sv02 * J(Ti, Ti, 1)
-						su02_zero = (su02 < sqrt(epsilon(1)))
-						if (su02_zero) su02 = epsilon(1)
-						sui2 = select(sui2, sui2 :> 0) + (sui2 :== 0) :* epsilon(1)
-
-						V_1 = diag(1 :/ (su02 \ sui2))
-						Sig_1 = invsym(Sig)
-						Lmd = invsym(V_1 + A' * Sig_1 * A)
-
-						// Lmd = Lmd + 1e-8 * I(rows(Lmd))
-
-						// 		"Lmd"
-						// 		Lmd
-						R_ = Lmd * A' * Sig_1
-						Re = R_ * ei
-						// 		"Re"
-						// 		Re
-						//     CholLmd = cholesky(Lmd)'
-
-						// CholLmd = cholesky(Lmd)
-						// CholLmd = CholLmd'
-
-						// 		"CholLmd"
-						// 		CholLmd
-
-						if (simtype == "halton") {
-							//         primes = generate_primes(halton_base, Ti)
-							mydraws = generate_halton_matrix(R, Ti, 2)
-						} else {
-							mydraws = runiform(R, Ti)
-						}
-						// 		"mydraws[1..10, 1..5]"
-						// 		mydraws[1..10, 1..5]
-
-						//     ghkReLmd = ghk(CholLmd, Re, mydraws, R)
-
-						// Calculate GHK for Re and Lambda
-						//     from_vec = J(Ti+1, 1, -1e16)  // Approximation of -Inf
-						//     to_vec = Re
-						//     ghkReLmd = ghk(CholLmd, from_vec, to_vec, mydraws, R)
-
-						// 		"ghkReLmd - ghk"
-						// 		ghkReLmd
-
-
-						ghkReLmd = ghk_Richard_Gates(Lmd, Re, mydraws, R)
-
-						// 		"ghkReLmd - ghk_Richard_Gates"
-						// 		ghkReLmd
-
-						te_it = J(Ti + 1, 1, .)
-
-						// 		printf("Re: %g x %g\n", rows(Re), cols(Re))
-						// printf("Lmd: %g x %g\n", rows(Lmd), cols(Lmd))
-						// printf("CholLmd: %g x %g\n", rows(CholLmd), cols(CholLmd))
-						//
-						// printf("Re: %g x %g, Lmd[ , 1]: %g x %g\n", rows(Re), cols(Re), rows(Lmd[ , 1]), cols(Lmd[ , 1]))
-
-						te_it = J(Ti + 1, 1, .)
-
-						for (i = 1; i <= Ti + 1; i++) {
-
-							// printf("i = %g, Lmd[ , i]: %g x %g\n", i, rows(Lmd[ , i]), cols(Lmd[ , i]))
-
-							t00 = -Re[i] + 0.5 * Lmd[i, i]
-							t11 = exp(t00)
-							// 				t11
-							// 				t22 = ghk(CholLmd, Re :- Lmd[ , i], mydraws, R)
-
-
-							// t22 = ghk(CholLmd, from_vec, Re :- vec(Lmd[ , i]), mydraws, R)
-							t22 = ghk_Richard_Gates(Lmd, Re :- vec(Lmd[ , i]), mydraws, R)
-							// t22
-
-							te_it[i] = t11 :* t22 :/ ghkReLmd
-						}
-						// 		te_it
-						// 		"loop done"
-
-						// 		finite_idx = selectindex(te_it :== te_it :& te_it :!= .)
-						// 		"1"
-						// 		nonfinite_idx = selectindex(!(te_it :== te_it :& te_it :!= .))
-						//		
-						// printf("finite_idx = ")
-						// finite_idx
-						// printf("nonfinite_idx = ")
-						// nonfinite_idx
-						// "te_it :== te_it"
-						// te_it :== te_it
-						// "te_it :!= ."
-						// te_it :!= .
-						// "te_it :== te_it :& te_it :!= ."
-						// te_it :== te_it :& te_it :!= .
-						// "!(te_it :== te_it :& te_it :!= .)"
-						// !(te_it :== te_it :& te_it :!= .)
-
-						// 		"2"
-						// 		te_it[nonfinite_idx] = .
-						// 		"3"
-						te_max = max(te_it)
-						// 		"4"
-						te_it_alt = (exp(-prod * sqrt(2 * su02 / pi())) \ exp(-prod * sqrt(2 * sui2 :/ pi())))
-						// 		"5"
-
-						if (su02_zero) te_it[1] = 1
-						// 		"6"
-						te_it[2..(Ti+1)] = select(te_it[2..(Ti+1)], sui2 :> 0) + (sui2 :== 0) :* 1
-						// "7"
-						return(te_it)
-					}
-
-				end
-
-				**# ghk ghk_Richard_Gates
-
-				capture mata mata drop ghk_Richard_Gates()
-				mata:
-					// In the code snippet below, assume that V= Σ and that x is a vector of length m containing the upper bounds of integration. 
-
-					real scalar ghk_Richard_Gates(real matrix V, real vector x, real matrix draws, real scalar n) {
-						// here "x" is "to", and "n" is "R"
-						real scalar m
-						real matrix z, a, p
-
-						m = cols(V)
-
-						// 	"n"
-						// 	n		
-						// 	"x"
-						// 	x	
-						// 	"V"
-						// 	V
-
-						z = J(n,m-1,0)
-						// 	11
-						a = J(n,1,x[1])
-						// 	12
-						p = J(n,1,1)
-						// 	13
-						T = cholesky(V)'
-						// 	14
-						for (j=1; j<=m; j++) {
-							if (j > 1) a = J(n,1,x[j]) - z[,1::(j-1)]*T[1::(j-1),j]
-							a = normal(a:/T[j,j])
-							p = p:*a
-							// 		if (j < m) z[.,j] = invnormal(uniform(n,1):*a)
-							if (j < m) z[.,j] = invnormal(draws[ ,j]:*a)
-						}
-						// 	21
-						pr = sum(p)/n
-						return(pr)	
-					}
-				end
-
-				**# ghk
-
-				capture mata mata drop ghk()
-				mata:
-					// GHK simulator function
-					real scalar ghk(real matrix C, real vector to, real matrix draws, real scalar R) {
-						real scalar K, k
-						real matrix z, a1, b1, pi, mysum
-
-						K = cols(C)
-						z = J(R, K - 1, 0)
-						pi = J(R, 1, 1)
-
-						for (k = 1; k <= K; k++) {
-							if (k == 1) {
-								a1 = J(R, 1, to[1])
-								b1 = J(R, 1, to[1])
-							} else {
-								mysum = z[ , 1..(k - 1)] * C[k, 1..(k - 1)]'
-								a1 = J(R, 1, to[k]) :- mysum
-								b1 = J(R, 1, to[k]) :- mysum
-							}
-
-							a1 = normal(a1 :/ C[k, k])
-							b1 = normal(b1 :/ C[k, k])
-							pi = pi :* (b1 :- a1)
-
-							if (k < K) {
-								z[ , k] = invnormal(a1 :+ draws[ , k] :* (b1 :- a1))
-							}
-						}
-
-						return(mean(pi))
-					}
-				end
-
-
-				//# gtrefull2optimize
-
-				capture mata mata drop gtrefull2optimize()
-				mata:
-					void gtrefull2optimize(real scalar todo, real vector theta, ///
-						real vector yit,   /// 1
-						real matrix xit,   /// 2
-						real matrix zvi,   /// 3
-						real matrix zui,   /// 4
-						real matrix zvit,  /// 5
-						real matrix zuit,  /// 6
-						real matrix ids,   /// 7
-						real matrix mydraws,   /// 8
-						real rowvector scalars, /// 9
-						llf, grad, H)
-					{
-						real vector bet, gvi0, gui0, gvit, guit, xb, eit, ///
-							sv02, su02, sui2, svi2, ei, sv02i, su02i, svi2i, sui2i, ///
-							su02_zero, Re
-
-						real scalar k, kv0, ku0, kv, ku, nobs, nt, prod, Ti, ///
-							ghkReLmd, term2, R, hb
-
-						real matrix Sig, V_1, Sig_1, Lmd, SAVA, SAVA_L, SAVA_1, R_, V
-
-						// 	scalars
-
-						// 	1 v_0i
-						// 	2 u_0i
-						// 	3 v_it
-						// 	4 u_it
-
-						k         = scalars[1]
-						kv0       = scalars[2]
-						ku0       = scalars[3]
-						kv        = scalars[4]
-						ku        = scalars[5]
-						//   Ktheta    = scalars[6]
-						nobs      = scalars[7]
-						nt        = scalars[8]
-						prod      = scalars[9]
-						R         = scalars[10]
-						hb         = scalars[11]
-
-						// 	11
-						bet       = theta[1,1..k]
-						// 	12
-						gvi0      = theta[(k+1)..(k+kv0)]
-						// 	13
-						gui0      = theta[(k+kv0+1)..(k+kv0+ku0)]
-						// 	14
-						gvit      = theta[(k+kv0+ku0+1)..(k+kv0+ku0+kv)]
-						// 	15
-						guit      = theta[(k+kv0+ku0+kv+1)..(k+kv0+ku0+kv+ku)]
-						// 	16
-						xb        = xit * bet'
-						// 	17
-						eit       = yit - xb
-						// 	18
-
-						sv02 = exp( zvi * gvi0' )
-						su02 = exp( zui * gui0' )
-						sui2 = exp( zuit * guit' )
-						svi2 = exp( zvit * gvit' )
-
-						// 	mydraws = generate_halton_matrix(R, Ti, hb)
-						// 	mydraws = generate_halton_matrix(R, nt, hb) // this generates RxNT, I need transpose
-						// 	mydraws = mydraws'
-
-						// 	mydraws comes from outside, it is a NTxR matrix
-
-						llf       = J(nobs,1,.)
-
-						for (i = 1; i <= nobs; i++) {
-							ei     = panelsubmatrix(eit,  i, ids)
-							sv02i  = panelsubmatrix(sv02,  i, ids)[1,1]
-							su02i  = panelsubmatrix(su02,  i, ids)[1,1]
-							svi2i  = panelsubmatrix(svi2,  i, ids)
-							sui2i  = panelsubmatrix(sui2,  i, ids)
-							mydrawsi  = panelsubmatrix(mydraws,  i, ids)
-							mydrawsi = mydrawsi' // transpose it back
-
-
-							// 		Ti = rows(ei)
-							Ti      = ids[i,3]
-
-							//     do_prod = (prod == 1 ? 1 : -1)
-							A = -1 * prod * (I(Ti) , J(Ti, 1, 1))
-
-							Sig = diag(svi2i) + sv02i * J(Ti, Ti, 1)
-							su02_zero = (su02i < sqrt(epsilon(1)))
-							if (su02_zero) su02i = epsilon(1)
-							sui2i = select(sui2i, sui2i :> 0) + (sui2i :== 0) :* epsilon(1)
-
-							V = diag((su02i \ sui2i))
-							V_1 = diag(1 :/ (su02i \ sui2i))
-
-							Sig_1 = invsym(Sig)
-							Lmd = invsym(V_1 + A' * Sig_1 * A)
-							SAVA = Sig + A * V * A'
-							SAVA_L = cholesky(SAVA)
-							SAVA_1 = invsym(SAVA)
-
-							// 		// Solve L * Y = I for Y
-							// 		real matrix YY 
-							// 		YY = lusolve(SAVA_L, I(rows(SAVA_L)))
-							//
-							// 		// Then solve L' * X = Y for X
-							// 		SAVA_1 = lusolve(SAVA_L', YY)
-
-							//     R_ = Lmd * A' * Sig_1
-							R_ = V * A' * SAVA_1
-							Re = R_ * ei
-
-							// 		mydraws = generate_halton_matrix(R, Ti, hb)
-
-							ghkReLmd = ghk_Richard_Gates(Lmd, Re, mydrawsi, R)
-
-							// 		term2 = mvn_density(ei, J(Ti, 1, 0), SAVA)
-							//    llf[i]  = (Ti+1)*log(2) + log(term2) + log(ghkReLmd)
-
-							term2 = mvn_density_log(ei, J(Ti, 1, 0), SAVA_1, SAVA_L)
-							llf[i]  = (Ti+1)*log(2) + term2 + log(ghkReLmd)
-
-						}
-
-					}
-
-				end
-
-				//# multivariate normal density
-				capture mata mata drop mvn_density()
-				capture mata mata drop mvn_density_log()
-
-				mata
-
-					real scalar mvn_density(real vector x, real vector mu, real matrix Sigma)
-					{
-						real scalar k, detSigma, norm_const, exponent
-						real vector diff
-						real matrix invSigma
-
-						k = rows(x)
-						diff = x - mu
-						invSigma = invsym(Sigma)
-						detSigma = det(Sigma)
-
-						norm_const = 1 / ((2 * pi())^(k/2) * sqrt(detSigma))
-						exponent = -0.5 * diff' * invSigma * diff
-
-						return(norm_const * exp(exponent))
-					}
-
-					real scalar mvn_density_log(real vector x, real vector mu, real matrix invSigma, real matrix cholSigma, | real scalar log)
-					{
-						real scalar k, norm_const, exponent
-						real vector diff
-
-						if (args() < 4) log = 1  // default to log = true
-						k = rows(x)
-						diff = x - mu
-						//     invSigma = invsym(Sigma)
-						//     detSigma = det(Sigma)
-
-						real scalar log_detSigma
-						log_detSigma = 2 * sum(ln(diagonal(cholSigma)))
-
-
-						//     norm_const = -0.5 * k * ln(2 * pi()) - 0.5 * ln(detSigma)
-						norm_const = -0.5 * k * ln(2 * pi()) - 0.5 * log_detSigma
-						exponent = -0.5 * diff' * invSigma * diff
-
-						if (log) {
-							return(norm_const + exponent)
-						} else {
-							return(exp(norm_const + exponent))
-						}
-					}
-
-
-				end
-
-				**# gtre_ll_het C
-				capture mata mata drop gtre_ll_het0()
-				mata:
-					real scalar gtre_ll_het0(real scalar prod,
-					real matrix V, real matrix U,
-					real colvector Y, real matrix X,
-					real matrix Zv0, real scalar vv0zero,
-					real matrix Zu0, real scalar vu0zero,
-					real matrix Zvi,
-					real matrix Zui, real scalar vuizero,
-					real colvector ids, real colvector idvar,
-					real colvector theta,
-					real scalar NT, real scalar N, real scalar R,
-					real scalar Kb, real scalar Kv0, real scalar Ku0,
-					real scalar Kvi, real scalar Kui)
-					{
-						real colvector YXb, Vv0, Vu0, Vvi, Vui, S, L
-						real colvector Pi
-						real scalar q, w, i, r, j
-						real scalar es, els, Pitr, Pir, lnls
-
-						// Initialize arrays
-						YXb = J(NT, 1, 0)
-						Vv0 = J(NT, 1, 0)
-						Vu0 = J(NT, 1, 0)
-						Vvi = J(NT, 1, 0)
-						Vui = J(NT, 1, 0)
-						S   = J(NT, 1, 0)
-						L   = J(NT, 1, 0)
-						Pi  = J(N, 1, 0)
-
-						// Calculate YXb = Y - X*b and variances
-						for(q = 1; q <= NT; q++) {
-							// XB calculation
-							YXb[q] = Y[q]
-							for(w = 1; w <= Kb; w++) {
-								YXb[q] = YXb[q] - X[q, w] * theta[w]
-							}
-
-							// Vv0 calculation
-							if(vv0zero == 1) {
-								Vv0[q] = 0
-							}
-							else {
-								Vv0[q] = 0
-								for(w = 1; w <= Kv0; w++) {
-									Vv0[q] = Vv0[q] + Zv0[q, w] * theta[Kb + w]
-								}
-								Vv0[q] = exp(Vv0[q])
-							}
-
-							// Vu0 calculation
-							if(vu0zero == 1) {
-								Vu0[q] = 0
-							}
-							else {
-								Vu0[q] = 0
-								for(w = 1; w <= Ku0; w++) {
-									Vu0[q] = Vu0[q] + Zu0[q, w] * theta[Kb + Kv0 + w]
-								}
-								Vu0[q] = exp(Vu0[q])
-							}
-
-							// Vvi calculation
-							Vvi[q] = 0
-							for(w = 1; w <= Kvi; w++) {
-								Vvi[q] = Vvi[q] + Zvi[q, w] * theta[Kb + Kv0 + Ku0 + w]
-							}
-							Vvi[q] = exp(Vvi[q])
-
-							// Vui calculation
-							if(vuizero == 1) {
-								Vui[q] = 0
-							}
-							else {
-								Vui[q] = 0
-								for(w = 1; w <= Kui; w++) {
-									Vui[q] = Vui[q] + Zui[q, w] * theta[Kb + Kv0 + Ku0 + Kvi + w]
-								}
-								Vui[q] = exp(Vui[q])
-							}
-
-							// Sum of Vui and Vvi and Lambda_it
-							S[q] = Vui[q] + Vvi[q]
-							L[q] = sqrt(Vui[q] / Vvi[q])
-						}
-
-						// Initialize log-likelihood
-						lnls = 0
-
-						// Main likelihood calculation loop
-						for(i = 1; i <= N; i++) {
-							Pi[i] = 0
-
-							for(r = 1; r <= R; r++) {
-								Pir = 1
-
-								for(j = 1; j <= NT; j++) {
-									if(idvar[j] == ids[i]) {
+	real vector e_exp_tu(real vector ei, real scalar id, real vector sui2, real vector svi2,
+	real scalar sv02, real scalar su02, real scalar prod,
+	string scalar simtype, real scalar seed, real scalar R,
+	real scalar halton_base, real scalar inv_tol, real scalar print_level) {
+
+		real scalar Ti, do_prod, su02_zero, ghkReLmd, te_max, range_star
+		real matrix A, Sig, V_1, Sig_1, Lmd, R_, CholLmd, mydraws
+		real vector Re, te_it, te_it_alt, te_resi, result
+		real scalar t00, t11, t22, temp
+
+		Ti = rows(ei)
+		do_prod = (prod == 1 ? 1 : -1)
+		A = -1 * do_prod * (I(Ti) , J(Ti, 1, 1))
+
+		Sig = diag(svi2) + sv02 * J(Ti, Ti, 1)
+		su02_zero = (su02 < sqrt(epsilon(1)))
+		if (su02_zero) su02 = epsilon(1)
+		sui2 = select(sui2, sui2 :> 0) + (sui2 :== 0) :* epsilon(1)
+
+		V_1 = diag(1 :/ (su02 \ sui2))
+		Sig_1 = invsym(Sig)
+		Lmd = invsym(V_1 + A' * Sig_1 * A)
+
+		// Lmd = Lmd + 1e-8 * I(rows(Lmd))
+
+		// 		"Lmd"
+		// 		Lmd
+		R_ = Lmd * A' * Sig_1
+		Re = R_ * ei
+		// 		"Re"
+		// 		Re
+		//     CholLmd = cholesky(Lmd)'
+
+		// CholLmd = cholesky(Lmd)
+		// CholLmd = CholLmd'
+
+		// 		"CholLmd"
+		// 		CholLmd
+
+		if (simtype == "halton") {
+			//         primes = generate_primes(halton_base, Ti)
+			mydraws = generate_halton_matrix(R, Ti, 2)
+		} else {
+			mydraws = runiform(R, Ti)
+		}
+		// 		"mydraws[1..10, 1..5]"
+		// 		mydraws[1..10, 1..5]
+
+		//     ghkReLmd = ghk(CholLmd, Re, mydraws, R)
+
+		// Calculate GHK for Re and Lambda
+		//     from_vec = J(Ti+1, 1, -1e16)  // Approximation of -Inf
+		//     to_vec = Re
+		//     ghkReLmd = ghk(CholLmd, from_vec, to_vec, mydraws, R)
+
+		// 		"ghkReLmd - ghk"
+		// 		ghkReLmd
+
+
+		ghkReLmd = ghk_Richard_Gates(Lmd, Re, mydraws, R)
+
+		// 		"ghkReLmd - ghk_Richard_Gates"
+		// 		ghkReLmd
+
+		te_it = J(Ti + 1, 1, .)
+
+		// 		printf("Re: %g x %g\n", rows(Re), cols(Re))
+		// printf("Lmd: %g x %g\n", rows(Lmd), cols(Lmd))
+		// printf("CholLmd: %g x %g\n", rows(CholLmd), cols(CholLmd))
+		//
+		// printf("Re: %g x %g, Lmd[ , 1]: %g x %g\n", rows(Re), cols(Re), rows(Lmd[ , 1]), cols(Lmd[ , 1]))
+
+		te_it = J(Ti + 1, 1, .)
+
+		for (i = 1; i <= Ti + 1; i++) {
+
+			// printf("i = %g, Lmd[ , i]: %g x %g\n", i, rows(Lmd[ , i]), cols(Lmd[ , i]))
+
+			t00 = -Re[i] + 0.5 * Lmd[i, i]
+			t11 = exp(t00)
+			// 				t11
+			// 				t22 = ghk(CholLmd, Re :- Lmd[ , i], mydraws, R)
+
+
+			// t22 = ghk(CholLmd, from_vec, Re :- vec(Lmd[ , i]), mydraws, R)
+			t22 = ghk_Richard_Gates(Lmd, Re :- vec(Lmd[ , i]), mydraws, R)
+			// t22
+
+			te_it[i] = t11 :* t22 :/ ghkReLmd
+		}
+		// 		te_it
+		// 		"loop done"
+
+		// 		finite_idx = selectindex(te_it :== te_it :& te_it :!= .)
+		// 		"1"
+		// 		nonfinite_idx = selectindex(!(te_it :== te_it :& te_it :!= .))
+		//		
+		// printf("finite_idx = ")
+		// finite_idx
+		// printf("nonfinite_idx = ")
+		// nonfinite_idx
+		// "te_it :== te_it"
+		// te_it :== te_it
+		// "te_it :!= ."
+		// te_it :!= .
+		// "te_it :== te_it :& te_it :!= ."
+		// te_it :== te_it :& te_it :!= .
+		// "!(te_it :== te_it :& te_it :!= .)"
+		// !(te_it :== te_it :& te_it :!= .)
+
+		// 		"2"
+		// 		te_it[nonfinite_idx] = .
+		// 		"3"
+		te_max = max(te_it)
+		// 		"4"
+		te_it_alt = (exp(-prod * sqrt(2 * su02 / pi())) \ exp(-prod * sqrt(2 * sui2 :/ pi())))
+		// 		"5"
+
+		if (su02_zero) te_it[1] = 1
+		// 		"6"
+		te_it[2..(Ti+1)] = select(te_it[2..(Ti+1)], sui2 :> 0) + (sui2 :== 0) :* 1
+		// "7"
+		return(te_it)
+	}
+
+end
+
+**# ghk ghk_Richard_Gates
+
+capture mata mata drop ghk_Richard_Gates()
+mata:
+	// In the code snippet below, assume that V= Σ and that x is a vector of length m containing the upper bounds of integration. 
+
+	real scalar ghk_Richard_Gates(real matrix V, real vector x, real matrix draws, real scalar n) {
+		// here "x" is "to", and "n" is "R"
+		real scalar m
+		real matrix z, a, p
+
+		m = cols(V)
+
+		// 	"n"
+		// 	n		
+		// 	"x"
+		// 	x	
+		// 	"V"
+		// 	V
+
+		z = J(n,m-1,0)
+		// 	11
+		a = J(n,1,x[1])
+		// 	12
+		p = J(n,1,1)
+		// 	13
+		T = cholesky(V)'
+		// 	14
+		for (j=1; j<=m; j++) {
+			if (j > 1) a = J(n,1,x[j]) - z[,1::(j-1)]*T[1::(j-1),j]
+			a = normal(a:/T[j,j])
+			p = p:*a
+			// 		if (j < m) z[.,j] = invnormal(uniform(n,1):*a)
+			if (j < m) z[.,j] = invnormal(draws[ ,j]:*a)
+		}
+		// 	21
+		pr = sum(p)/n
+		return(pr)	
+	}
+end
+
+**# ghk
+
+capture mata mata drop ghk()
+mata:
+	// GHK simulator function
+	real scalar ghk(real matrix C, real vector to, real matrix draws, real scalar R) {
+		real scalar K, k
+		real matrix z, a1, b1, pi, mysum
+
+		K = cols(C)
+		z = J(R, K - 1, 0)
+		pi = J(R, 1, 1)
+
+		for (k = 1; k <= K; k++) {
+			if (k == 1) {
+				a1 = J(R, 1, to[1])
+				b1 = J(R, 1, to[1])
+			} else {
+				mysum = z[ , 1..(k - 1)] * C[k, 1..(k - 1)]'
+				a1 = J(R, 1, to[k]) :- mysum
+				b1 = J(R, 1, to[k]) :- mysum
+			}
+
+			a1 = normal(a1 :/ C[k, k])
+			b1 = normal(b1 :/ C[k, k])
+			pi = pi :* (b1 :- a1)
+
+			if (k < K) {
+				z[ , k] = invnormal(a1 :+ draws[ , k] :* (b1 :- a1))
+			}
+		}
+
+		return(mean(pi))
+	}
+end
+
+//# multivariate normal density
+capture mata mata drop mvn_density()
+capture mata mata drop mvn_density_log()
+
+mata
+
+	real scalar mvn_density(real vector x, real vector mu, real matrix Sigma)
+	{
+		real scalar k, detSigma, norm_const, exponent
+		real vector diff
+		real matrix invSigma
+
+		k = rows(x)
+		diff = x - mu
+		invSigma = invsym(Sigma)
+		detSigma = det(Sigma)
+
+		norm_const = 1 / ((2 * pi())^(k/2) * sqrt(detSigma))
+		exponent = -0.5 * diff' * invSigma * diff
+
+		return(norm_const * exp(exponent))
+	}
+
+	real scalar mvn_density_log(real vector x, real vector mu, real matrix invSigma, real matrix cholSigma, | real scalar log)
+	{
+		real scalar k, norm_const, exponent
+		real vector diff
+
+		if (args() < 4) log = 1  // default to log = true
+		k = rows(x)
+		diff = x - mu
+		//     invSigma = invsym(Sigma)
+		//     detSigma = det(Sigma)
+
+		real scalar log_detSigma
+		log_detSigma = 2 * sum(ln(diagonal(cholSigma)))
+
+
+		//     norm_const = -0.5 * k * ln(2 * pi()) - 0.5 * ln(detSigma)
+		norm_const = -0.5 * k * ln(2 * pi()) - 0.5 * log_detSigma
+		exponent = -0.5 * diff' * invSigma * diff
+
+		if (log) {
+			return(norm_const + exponent)
+		} else {
+			return(exp(norm_const + exponent))
+		}
+	}
+
+
+end
+
+**# gtre_ll_het C
+capture mata mata drop gtre_ll_het0()
+mata:
+	real scalar gtre_ll_het0(real scalar prod,
+	real matrix V, real matrix U,
+	real colvector Y, real matrix X,
+	real matrix Zv0, real scalar vv0zero,
+	real matrix Zu0, real scalar vu0zero,
+	real matrix Zvi,
+	real matrix Zui, real scalar vuizero,
+	real colvector ids, real colvector idvar,
+	real colvector theta,
+	real scalar NT, real scalar N, real scalar R,
+	real scalar Kb, real scalar Kv0, real scalar Ku0,
+	real scalar Kvi, real scalar Kui)
+	{
+		real colvector YXb, Vv0, Vu0, Vvi, Vui, S, L
+		real colvector Pi
+		real scalar q, w, i, r, j
+		real scalar es, els, Pitr, Pir, lnls
+
+		// Initialize arrays
+		YXb = J(NT, 1, 0)
+		Vv0 = J(NT, 1, 0)
+		Vu0 = J(NT, 1, 0)
+		Vvi = J(NT, 1, 0)
+		Vui = J(NT, 1, 0)
+		S   = J(NT, 1, 0)
+		L   = J(NT, 1, 0)
+		Pi  = J(N, 1, 0)
+
+		// Calculate YXb = Y - X*b and variances
+		for(q = 1; q <= NT; q++) {
+			// XB calculation
+			YXb[q] = Y[q]
+			for(w = 1; w <= Kb; w++) {
+				YXb[q] = YXb[q] - X[q, w] * theta[w]
+			}
+
+			// Vv0 calculation
+			if(vv0zero == 1) {
+				Vv0[q] = 0
+			}
+			else {
+				Vv0[q] = 0
+				for(w = 1; w <= Kv0; w++) {
+					Vv0[q] = Vv0[q] + Zv0[q, w] * theta[Kb + w]
+				}
+				Vv0[q] = exp(Vv0[q])
+			}
+
+			// Vu0 calculation
+			if(vu0zero == 1) {
+				Vu0[q] = 0
+			}
+			else {
+				Vu0[q] = 0
+				for(w = 1; w <= Ku0; w++) {
+					Vu0[q] = Vu0[q] + Zu0[q, w] * theta[Kb + Kv0 + w]
+				}
+				Vu0[q] = exp(Vu0[q])
+			}
+
+			// Vvi calculation
+			Vvi[q] = 0
+			for(w = 1; w <= Kvi; w++) {
+				Vvi[q] = Vvi[q] + Zvi[q, w] * theta[Kb + Kv0 + Ku0 + w]
+			}
+			Vvi[q] = exp(Vvi[q])
+
+			// Vui calculation
+			if(vuizero == 1) {
+				Vui[q] = 0
+			}
+			else {
+				Vui[q] = 0
+				for(w = 1; w <= Kui; w++) {
+					Vui[q] = Vui[q] + Zui[q, w] * theta[Kb + Kv0 + Ku0 + Kvi + w]
+				}
+				Vui[q] = exp(Vui[q])
+			}
+
+			// Sum of Vui and Vvi and Lambda_it
+			S[q] = Vui[q] + Vvi[q]
+			L[q] = sqrt(Vui[q] / Vvi[q])
+		}
+
+		// Initialize log-likelihood
+		lnls = 0
+
+		// Main likelihood calculation loop
+		for(i = 1; i <= N; i++) {
+			Pi[i] = 0
+
+			for(r = 1; r <= R; r++) {
+				Pir = 1
+
+				for(j = 1; j <= NT; j++) {
+					if(idvar[j] == ids[i]) {
                     // Main calculation
                     es = (YXb[j] - sqrt(Vv0[j]) * V[i, r] + sqrt(Vu0[j]) * U[i, r] * prod) * (S[j]^(-0.5))
                     els = prod * es * L[j]
@@ -1995,426 +1513,426 @@ if "`os'" == "MAC"{
 
                     // Product over t
                     Pir = Pir * Pitr
-									}
-								}
-
-								// Sum of Pir
-								Pi[i] = Pi[i] + Pir
-							}
-
-							// Mean of Pir
-							Pi[i] = Pi[i] / R
-						}
-
-						// Calculate log-likelihood by summing all the logged elements
-						for(i = 1; i <= N; i++) {
-							lnls = lnls + ln(Pi[i])
-						}
-
-						return(lnls)
 					}
-				end
+				}
 
-				**# gtre_ll_het1
-				capture mata mata drop gtre_ll_het1()
-				mata:
-					real colvector gtre_ll_het1(real scalar prod,
-					real matrix V, real matrix U,
-					real colvector Y, real matrix X,
-					real matrix zvi, real scalar vv0zero,
-					real matrix zui, real scalar vu0zero,
-					real matrix zvit,
-					real matrix zuit, real scalar vuizero,
-					real matrix ids, real colvector idvar,
-					real colvector theta,
-					real scalar NT, real scalar N, real scalar R,
-					real scalar k, real scalar kv0, real scalar ku0,
-					real scalar kv, real scalar ku)
-					{
-						real rowvector bet, gvi0, gui0, gvit, guit
-						real colvector eit, sv02, su02, svi2, sui2
-						real colvector ei, svi2i, sui2i, S, L
-						real scalar sv02i, su02i
-						real colvector Pi, lnls
-						real scalar i, r, j, t
-						real scalar es, els, Pitr, Pir
+				// Sum of Pir
+				Pi[i] = Pi[i] + Pir
+			}
 
-						// Extract parameter vectors using Mata-specific syntax
-						bet  = theta[1..k]'
-						gvi0 = theta[(k+1)..(k+kv0)]'
-						gui0 = theta[(k+kv0+1)..(k+kv0+ku0)]'
-						gvit = theta[(k+kv0+ku0+1)..(k+kv0+ku0+kv)]'
-						guit = theta[(k+kv0+ku0+kv+1)..(k+kv0+ku0+kv+ku)]'
+			// Mean of Pir
+			Pi[i] = Pi[i] / R
+		}
 
-						// Calculate residuals
-						eit = Y - X * bet
+		// Calculate log-likelihood by summing all the logged elements
+		for(i = 1; i <= N; i++) {
+			lnls = lnls + ln(Pi[i])
+		}
 
-						// Calculate variance components
-						if(vv0zero == 1) {
-							sv02 = J(NT, 1, 0)
-						}
-						else {
-							sv02 = exp(zvi * gvi0)
-						}
+		return(lnls)
+	}
+end
 
-						if(vu0zero == 1) {
-							su02 = J(NT, 1, 0)
-						}
-						else {
-							su02 = exp(zui * gui0)
-						}
+**# gtre_ll_het1
+capture mata mata drop gtre_ll_het1()
+mata:
+	real colvector gtre_ll_het1(real scalar prod,
+	real matrix V, real matrix U,
+	real colvector Y, real matrix X,
+	real matrix zvi, real scalar vv0zero,
+	real matrix zui, real scalar vu0zero,
+	real matrix zvit,
+	real matrix zuit, real scalar vuizero,
+	real matrix ids, real colvector idvar,
+	real colvector theta,
+	real scalar NT, real scalar N, real scalar R,
+	real scalar k, real scalar kv0, real scalar ku0,
+	real scalar kv, real scalar ku)
+	{
+		real rowvector bet, gvi0, gui0, gvit, guit
+		real colvector eit, sv02, su02, svi2, sui2
+		real colvector ei, svi2i, sui2i, S, L
+		real scalar sv02i, su02i
+		real colvector Pi, lnls
+		real scalar i, r, j, t
+		real scalar es, els, Pitr, Pir
 
-						svi2 = exp(zvit * gvit)
+		// Extract parameter vectors using Mata-specific syntax
+		bet  = theta[1..k]'
+		gvi0 = theta[(k+1)..(k+kv0)]'
+		gui0 = theta[(k+kv0+1)..(k+kv0+ku0)]'
+		gvit = theta[(k+kv0+ku0+1)..(k+kv0+ku0+kv)]'
+		guit = theta[(k+kv0+ku0+kv+1)..(k+kv0+ku0+kv+ku)]'
 
-						if(vuizero == 1) {
-							sui2 = J(NT, 1, 0)
-						}
-						else {
-							sui2 = exp(zuit * guit)
-						}
+		// Calculate residuals
+		eit = Y - X * bet
 
-						// Initialize Pi vector and lnls vector
-						Pi = J(N, 1, 0)
-						lnls = J(N, 1, 0)
+		// Calculate variance components
+		if(vv0zero == 1) {
+			sv02 = J(NT, 1, 0)
+		}
+		else {
+			sv02 = exp(zvi * gvi0)
+		}
 
-						// Main likelihood calculation loop using panelsubmatrix
-						for(i = 1; i <= N; i++) {
-							// Extract panel-specific data
-							ei    = panelsubmatrix(eit, i, ids)
-							sv02i = panelsubmatrix(sv02, i, ids)[1,1]
-							su02i = panelsubmatrix(su02, i, ids)[1,1]
-							svi2i = panelsubmatrix(svi2, i, ids)
-							sui2i = panelsubmatrix(sui2, i, ids)
+		if(vu0zero == 1) {
+			su02 = J(NT, 1, 0)
+		}
+		else {
+			su02 = exp(zui * gui0)
+		}
 
-							// Calculate S and L for this panel
-							S = sui2i + svi2i
-							L = sqrt(sui2i :/ svi2i)
+		svi2 = exp(zvit * gvit)
 
-							Pi[i] = 0
+		if(vuizero == 1) {
+			sui2 = J(NT, 1, 0)
+		}
+		else {
+			sui2 = exp(zuit * guit)
+		}
 
-							for(r = 1; r <= R; r++) {
-								Pir = 1
+		// Initialize Pi vector and lnls vector
+		Pi = J(N, 1, 0)
+		lnls = J(N, 1, 0)
 
-								// Loop over time periods for this individual
-								for(t = 1; t <= rows(ei); t++) {
-									// Main calculation
-									es = (ei[t] - sqrt(sv02i) * V[i, r] + sqrt(su02i) * U[i, r] * prod) * (S[t]^(-0.5))
-									els = prod * es * L[t]
+		// Main likelihood calculation loop using panelsubmatrix
+		for(i = 1; i <= N; i++) {
+			// Extract panel-specific data
+			ei    = panelsubmatrix(eit, i, ids)
+			sv02i = panelsubmatrix(sv02, i, ids)[1,1]
+			su02i = panelsubmatrix(su02, i, ids)[1,1]
+			svi2i = panelsubmatrix(svi2, i, ids)
+			sui2i = panelsubmatrix(sui2, i, ids)
 
-									// Calculate Pitr using standard normal density and cumulative distribution
-									Pitr = 2 * (S[t]^(-0.5)) * normalden(es) * normal(-els)
+			// Calculate S and L for this panel
+			S = sui2i + svi2i
+			L = sqrt(sui2i :/ svi2i)
 
-									// Product over t
-									Pir = Pir * Pitr
-								}
+			Pi[i] = 0
 
-								// Sum of Pir over r
-								Pi[i] = Pi[i] + Pir
-							}
+			for(r = 1; r <= R; r++) {
+				Pir = 1
 
-							// Mean of Pir
-							Pi[i] = Pi[i] / R
-						}
+				// Loop over time periods for this individual
+				for(t = 1; t <= rows(ei); t++) {
+					// Main calculation
+					es = (ei[t] - sqrt(sv02i) * V[i, r] + sqrt(su02i) * U[i, r] * prod) * (S[t]^(-0.5))
+					els = prod * es * L[t]
 
-						// Calculate log-likelihood for each individual
-						for(i = 1; i <= N; i++) {
-							lnls[i] = ln(Pi[i])
-						}
+					// Calculate Pitr using standard normal density and cumulative distribution
+					Pitr = 2 * (S[t]^(-0.5)) * normalden(es) * normal(-els)
 
-						return(lnls)
-					}
-				end
+					// Product over t
+					Pir = Pir * Pitr
+				}
 
-				**# gtre_ll_het pointers
-				capture mata mata drop gtre_ll_het_p()
-				mata:
-					void gtre_ll_het_p(real scalar todo, real vector theta, ///
-						pointer(real matrix) scalar pYX,    // 1
-					pointer(real matrix) scalar pzvi,    // 2
-					pointer(real matrix) scalar pzui,    // 3
-					pointer(real matrix) scalar pzvit,    // 4
-					pointer(real matrix) scalar pzuit,    // 5
-					pointer(real matrix) scalar pV,    // 6
-					pointer(real matrix) scalar pU,    // 7
-					real matrix ids,    // 8
-					real rowvector scalars, /// 9
-						llf, grad, H)
-					{
-						real rowvector bet, gvi0, gui0, gvit, guit
-						real colvector eit, sv02, su02, svi2, sui2
-						real colvector ei, svi2i, sui2i, S, L
-						real scalar sv02i, su02i
-						real colvector Pi
-						real scalar i, r, t
-						real scalar es, els, Pitr, Pir
+				// Sum of Pir over r
+				Pi[i] = Pi[i] + Pir
+			}
 
-						k         = scalars[1]
-						kv0       = scalars[2]
-						ku0       = scalars[3]
-						kv        = scalars[4]
-						ku        = scalars[5]
-						//   Ktheta    = scalars[6]
-						nobs      = scalars[7]
-						nt        = scalars[8]
-						prod      = scalars[9]
-						R         = scalars[10]
-						vv0zero         = scalars[11]
-						vu0zero         = scalars[12]
-						vuizero         = scalars[13]
+			// Mean of Pir
+			Pi[i] = Pi[i] / R
+		}
 
-						// Extract parameter vectors using Mata-specific syntax
-						// 	1
-						// 	theta
-						// 	11
-						// 	scalars
-						// 	12
-						bet  = theta[1,1..k]'
-						// 	13
-						// 	bet
-						gvi0 = theta[(k+1)..(k+kv0)]'
-						// 	14
-						// 	gvi0
-						gui0 = theta[(k+kv0+1)..(k+kv0+ku0)]'
-						// 	15
-						// 	gui0
-						gvit = theta[(k+kv0+ku0+1)..(k+kv0+ku0+kv)]'
-						// 	16
-						// 	gvit
-						guit = theta[(k+kv0+ku0+kv+1)..(k+kv0+ku0+kv+ku)]'
-						// 	17
-						// 	guit
-						// 	1
-						// Calculate residuals
-						bet1 = (1\ -bet)
-						// 	bet1
-						// 	11
-						// 	cols(*pYX)
-						// 	rows(*pYX)
-						eit = *pYX * bet1
-						//     eit = *pY - *pX * bet
-						//     2
-						// Calculate variance components
-						if(vv0zero == 1) {
-							sv02 = J(nt, 1, 0)
-						}
-						else {
-							sv02 = exp(*pzvi * gvi0)
-						}
-						//     3
-						if(vu0zero == 1) {
-							su02 = J(nt, 1, 0)
-						}
-						else {
-							su02 = exp(*pzui * gui0)
-						}
-						//     4
-						svi2 = exp(*pzvit * gvit)
-						//     5
-						if(vuizero == 1) {
-							sui2 = J(nt, 1, 0)
-						}
-						else {
-							sui2 = exp(*pzuit * guit)
-						}
-						//     6
-						// Initialize Pi vector and lnls vector
-						Pi = J(nobs, 1, 0)
-						llf = J(nobs, 1, 0)
-						//     7
-						// Main likelihood calculation loop using panelsubmatrix
-						for(i = 1; i <= nobs; i++) {
-							// Extract panel-specific data
-							ei    = panelsubmatrix(eit, i, ids)
-							sv02i = panelsubmatrix(sv02, i, ids)[1,1]
-							su02i = panelsubmatrix(su02, i, ids)[1,1]
-							svi2i = panelsubmatrix(svi2, i, ids)
-							sui2i = panelsubmatrix(sui2, i, ids)
+		// Calculate log-likelihood for each individual
+		for(i = 1; i <= N; i++) {
+			lnls[i] = ln(Pi[i])
+		}
 
-							// Calculate S and L for this panel
-							S = sui2i + svi2i
-							L = sqrt(sui2i :/ svi2i)
+		return(lnls)
+	}
+end
 
-							Pi[i] = 0
+**# gtre_ll_het pointers
+capture mata mata drop gtre_ll_het_p()
+mata:
+	void gtre_ll_het_p(real scalar todo, real vector theta, ///
+		pointer(real matrix) scalar pYX,    // 1
+	pointer(real matrix) scalar pzvi,    // 2
+	pointer(real matrix) scalar pzui,    // 3
+	pointer(real matrix) scalar pzvit,    // 4
+	pointer(real matrix) scalar pzuit,    // 5
+	pointer(real matrix) scalar pV,    // 6
+	pointer(real matrix) scalar pU,    // 7
+	real matrix ids,    // 8
+	real rowvector scalars, /// 9
+		llf, grad, H)
+	{
+		real rowvector bet, gvi0, gui0, gvit, guit
+		real colvector eit, sv02, su02, svi2, sui2
+		real colvector ei, svi2i, sui2i, S, L
+		real scalar sv02i, su02i
+		real colvector Pi
+		real scalar i, r, t
+		real scalar es, els, Pitr, Pir
 
-							for(r = 1; r <= R; r++) {
-								Pir = 1
+		k         = scalars[1]
+		kv0       = scalars[2]
+		ku0       = scalars[3]
+		kv        = scalars[4]
+		ku        = scalars[5]
+		//   Ktheta    = scalars[6]
+		nobs      = scalars[7]
+		nt        = scalars[8]
+		prod      = scalars[9]
+		R         = scalars[10]
+		vv0zero         = scalars[11]
+		vu0zero         = scalars[12]
+		vuizero         = scalars[13]
 
-								// Loop over time periods for this individual
-								for(t = 1; t <= rows(ei); t++) {
-									// Main calculation
-									es = (ei[t] - sqrt(sv02i) * (*pV)[i, r] + sqrt(su02i) * (*pU)[i, r] * prod) * (S[t]^(-0.5))
-									els = prod * es * L[t]
+		// Extract parameter vectors using Mata-specific syntax
+		// 	1
+		// 	theta
+		// 	11
+		// 	scalars
+		// 	12
+		bet  = theta[1,1..k]'
+		// 	13
+		// 	bet
+		gvi0 = theta[(k+1)..(k+kv0)]'
+		// 	14
+		// 	gvi0
+		gui0 = theta[(k+kv0+1)..(k+kv0+ku0)]'
+		// 	15
+		// 	gui0
+		gvit = theta[(k+kv0+ku0+1)..(k+kv0+ku0+kv)]'
+		// 	16
+		// 	gvit
+		guit = theta[(k+kv0+ku0+kv+1)..(k+kv0+ku0+kv+ku)]'
+		// 	17
+		// 	guit
+		// 	1
+		// Calculate residuals
+		bet1 = (1\ -bet)
+		// 	bet1
+		// 	11
+		// 	cols(*pYX)
+		// 	rows(*pYX)
+		eit = *pYX * bet1
+		//     eit = *pY - *pX * bet
+		//     2
+		// Calculate variance components
+		if(vv0zero == 1) {
+			sv02 = J(nt, 1, 0)
+		}
+		else {
+			sv02 = exp(*pzvi * gvi0)
+		}
+		//     3
+		if(vu0zero == 1) {
+			su02 = J(nt, 1, 0)
+		}
+		else {
+			su02 = exp(*pzui * gui0)
+		}
+		//     4
+		svi2 = exp(*pzvit * gvit)
+		//     5
+		if(vuizero == 1) {
+			sui2 = J(nt, 1, 0)
+		}
+		else {
+			sui2 = exp(*pzuit * guit)
+		}
+		//     6
+		// Initialize Pi vector and lnls vector
+		Pi = J(nobs, 1, 0)
+		llf = J(nobs, 1, 0)
+		//     7
+		// Main likelihood calculation loop using panelsubmatrix
+		for(i = 1; i <= nobs; i++) {
+			// Extract panel-specific data
+			ei    = panelsubmatrix(eit, i, ids)
+			sv02i = panelsubmatrix(sv02, i, ids)[1,1]
+			su02i = panelsubmatrix(su02, i, ids)[1,1]
+			svi2i = panelsubmatrix(svi2, i, ids)
+			sui2i = panelsubmatrix(sui2, i, ids)
 
-									// Calculate Pitr using standard normal density and cumulative distribution
-									Pitr = 2 * (S[t]^(-0.5)) * normalden(es) * normal(-els)
+			// Calculate S and L for this panel
+			S = sui2i + svi2i
+			L = sqrt(sui2i :/ svi2i)
 
-									// Product over t
-									Pir = Pir * Pitr
-								}
+			Pi[i] = 0
 
-								// Sum of Pir over r
-								Pi[i] = Pi[i] + Pir
-							}
+			for(r = 1; r <= R; r++) {
+				Pir = 1
 
-							// Mean of Pir
-							Pi[i] = Pi[i] / R
-						}
+				// Loop over time periods for this individual
+				for(t = 1; t <= rows(ei); t++) {
+					// Main calculation
+					es = (ei[t] - sqrt(sv02i) * (*pV)[i, r] + sqrt(su02i) * (*pU)[i, r] * prod) * (S[t]^(-0.5))
+					els = prod * es * L[t]
 
-						// Calculate log-likelihood for each individual
-						for(i = 1; i <= nobs; i++) {
-							llf[i] = ln(Pi[i])
-						}
-						// 		printf("llf = %f\n", sum(llf))
+					// Calculate Pitr using standard normal density and cumulative distribution
+					Pitr = 2 * (S[t]^(-0.5)) * normalden(es) * normal(-els)
 
-					}
-				end
+					// Product over t
+					Pir = Pir * Pitr
+				}
 
-				**# gtre_ll_het no pointers
-				capture mata mata drop gtre_ll_het()
-				mata:
-					void gtre_ll_het(real scalar todo, real vector theta, ///
-						real matrix YX,    // 1
-					real matrix zvi,    // 2
-					real matrix zui,    // 3
-					real matrix zvit,    // 4
-					real matrix zuit,    // 5
-					real matrix V,    // 6
-					real matrix U,    // 7
-					real matrix ids,    // 8
-					real rowvector scalars, /// 9
-						llf, grad, H)
-					{
-						real rowvector bet, gvi0, gui0, gvit, guit
-						real colvector eit, sv02, su02, svi2, sui2
-						real colvector ei, svi2i, sui2i, S, L
-						real scalar sv02i, su02i
-						real colvector Pi
-						real scalar i, r, t
-						real scalar es, els, Pitr, Pir
+				// Sum of Pir over r
+				Pi[i] = Pi[i] + Pir
+			}
 
-						k         = scalars[1]
-						kv0       = scalars[2]
-						ku0       = scalars[3]
-						kv        = scalars[4]
-						ku        = scalars[5]
-						//   Ktheta    = scalars[6]
-						nobs      = scalars[7]
-						nt        = scalars[8]
-						prod      = scalars[9]
-						R         = scalars[10]
-						vv0zero         = scalars[11]
-						vu0zero         = scalars[12]
-						vuizero         = scalars[13]
+			// Mean of Pir
+			Pi[i] = Pi[i] / R
+		}
 
-						// Extract parameter vectors using Mata-specific syntax
-						// 	1
-						// 	theta
-						// 	11
-						// 	scalars
-						// 	12
-						bet  = theta[1,1..k]'
-						// 	13
-						// 	bet
-						gvi0 = theta[(k+1)..(k+kv0)]'
-						// 	14
-						// 	gvi0
-						gui0 = theta[(k+kv0+1)..(k+kv0+ku0)]'
-						// 	15
-						// 	gui0
-						gvit = theta[(k+kv0+ku0+1)..(k+kv0+ku0+kv)]'
-						// 	16
-						// 	gvit
-						guit = theta[(k+kv0+ku0+kv+1)..(k+kv0+ku0+kv+ku)]'
-						// 	17
-						// 	guit
-						// 	1
-						// Calculate residuals
-						bet1 = (1\ -bet)
-						// 	bet1
-						// 	11
-						// 	cols(YX)
-						// 	rows(YX)
-						eit = YX * bet1
-						//     eit = *pY - *pX * bet
-						//     2
-						// Calculate variance components
-						if(vv0zero == 1) {
-							sv02 = J(nt, 1, 0)
-						}
-						else {
-							sv02 = exp(zvi * gvi0)
-						}
-						//     3
-						if(vu0zero == 1) {
-							su02 = J(nt, 1, 0)
-						}
-						else {
-							su02 = exp(zui * gui0)
-						}
-						//     4
-						svi2 = exp(zvit * gvit)
-						//     5
-						if(vuizero == 1) {
-							sui2 = J(nt, 1, 0)
-						}
-						else {
-							sui2 = exp(zuit * guit)
-						}
-						//     6
-						// Initialize Pi vector and lnls vector
-						Pi = J(nobs, 1, 0)
-						llf       = J(nobs,1,.)
+		// Calculate log-likelihood for each individual
+		for(i = 1; i <= nobs; i++) {
+			llf[i] = ln(Pi[i])
+		}
+		// 		printf("llf = %f\n", sum(llf))
 
-						//     7
-						// Main likelihood calculation loop using panelsubmatrix
-						for(i = 1; i <= nobs; i++) {
-							// 		printf("doing i = %f\n", i)
+	}
+end
 
-							// Extract panel-specific data
-							ei    = panelsubmatrix(eit, i, ids)
-							sv02i = panelsubmatrix(sv02, i, ids)[1,1]
-							su02i = panelsubmatrix(su02, i, ids)[1,1]
-							svi2i = panelsubmatrix(svi2, i, ids)
-							sui2i = panelsubmatrix(sui2, i, ids)
+**# gtre_ll_het no pointers
+capture mata mata drop gtre_ll_het()
+mata:
+	void gtre_ll_het(real scalar todo, real vector theta, ///
+		real matrix YX,    // 1
+	real matrix zvi,    // 2
+	real matrix zui,    // 3
+	real matrix zvit,    // 4
+	real matrix zuit,    // 5
+	real matrix V,    // 6
+	real matrix U,    // 7
+	real matrix ids,    // 8
+	real rowvector scalars, /// 9
+		llf, grad, H)
+	{
+		real rowvector bet, gvi0, gui0, gvit, guit
+		real colvector eit, sv02, su02, svi2, sui2
+		real colvector ei, svi2i, sui2i, S, L
+		real scalar sv02i, su02i
+		real colvector Pi
+		real scalar i, r, t
+		real scalar es, els, Pitr, Pir
 
-							// Calculate S and L for this panel
-							S = sui2i + svi2i
-							L = sqrt(sui2i :/ svi2i)
+		k         = scalars[1]
+		kv0       = scalars[2]
+		ku0       = scalars[3]
+		kv        = scalars[4]
+		ku        = scalars[5]
+		//   Ktheta    = scalars[6]
+		nobs      = scalars[7]
+		nt        = scalars[8]
+		prod      = scalars[9]
+		R         = scalars[10]
+		vv0zero         = scalars[11]
+		vu0zero         = scalars[12]
+		vuizero         = scalars[13]
 
-							Pi[i] = 0
+		// Extract parameter vectors using Mata-specific syntax
+		// 	1
+		// 	theta
+		// 	11
+		// 	scalars
+		// 	12
+		bet  = theta[1,1..k]'
+		// 	13
+		// 	bet
+		gvi0 = theta[(k+1)..(k+kv0)]'
+		// 	14
+		// 	gvi0
+		gui0 = theta[(k+kv0+1)..(k+kv0+ku0)]'
+		// 	15
+		// 	gui0
+		gvit = theta[(k+kv0+ku0+1)..(k+kv0+ku0+kv)]'
+		// 	16
+		// 	gvit
+		guit = theta[(k+kv0+ku0+kv+1)..(k+kv0+ku0+kv+ku)]'
+		// 	17
+		// 	guit
+		// 	1
+		// Calculate residuals
+		bet1 = (1\ -bet)
+		// 	bet1
+		// 	11
+		// 	cols(YX)
+		// 	rows(YX)
+		eit = YX * bet1
+		//     eit = *pY - *pX * bet
+		//     2
+		// Calculate variance components
+		if(vv0zero == 1) {
+			sv02 = J(nt, 1, 0)
+		}
+		else {
+			sv02 = exp(zvi * gvi0)
+		}
+		//     3
+		if(vu0zero == 1) {
+			su02 = J(nt, 1, 0)
+		}
+		else {
+			su02 = exp(zui * gui0)
+		}
+		//     4
+		svi2 = exp(zvit * gvit)
+		//     5
+		if(vuizero == 1) {
+			sui2 = J(nt, 1, 0)
+		}
+		else {
+			sui2 = exp(zuit * guit)
+		}
+		//     6
+		// Initialize Pi vector and lnls vector
+		Pi = J(nobs, 1, 0)
+		llf       = J(nobs,1,.)
 
-							for(r = 1; r <= R; r++) {
-								Pir = 1
+		//     7
+		// Main likelihood calculation loop using panelsubmatrix
+		for(i = 1; i <= nobs; i++) {
+			// 		printf("doing i = %f\n", i)
 
-								// Loop over time periods for this individual
-								for(t = 1; t <= rows(ei); t++) {
-									// Main calculation
-									es = (ei[t] - sqrt(sv02i) * V[i, r] + sqrt(su02i) * U[i, r] * prod) * (S[t]^(-0.5))
-									els = prod * es * L[t]
+			// Extract panel-specific data
+			ei    = panelsubmatrix(eit, i, ids)
+			sv02i = panelsubmatrix(sv02, i, ids)[1,1]
+			su02i = panelsubmatrix(su02, i, ids)[1,1]
+			svi2i = panelsubmatrix(svi2, i, ids)
+			sui2i = panelsubmatrix(sui2, i, ids)
 
-									// Calculate Pitr using standard normal density and cumulative distribution
-									Pitr = 2 * (S[t]^(-0.5)) * normalden(es) * normal(-els)
+			// Calculate S and L for this panel
+			S = sui2i + svi2i
+			L = sqrt(sui2i :/ svi2i)
 
-									// Product over t
-									Pir = Pir * Pitr
-								}
+			Pi[i] = 0
 
-								// Sum of Pir over r
-								Pi[i] = Pi[i] + Pir
-							}
+			for(r = 1; r <= R; r++) {
+				Pir = 1
 
-							// Mean of Pir
-							Pi[i] = Pi[i] / R
-						}
+				// Loop over time periods for this individual
+				for(t = 1; t <= rows(ei); t++) {
+					// Main calculation
+					es = (ei[t] - sqrt(sv02i) * V[i, r] + sqrt(su02i) * U[i, r] * prod) * (S[t]^(-0.5))
+					els = prod * es * L[t]
 
-						// 	1717
+					// Calculate Pitr using standard normal density and cumulative distribution
+					Pitr = 2 * (S[t]^(-0.5)) * normalden(es) * normal(-els)
 
-						// Calculate log-likelihood for each individual
-						for(i = 1; i <= nobs; i++) {
-							llf[i] = ln(Pi[i])
-						}
-						// 	printf("llf = %f\n", sum(llf))
-						// 	printf("i = %d done \n", i)
+					// Product over t
+					Pir = Pir * Pitr
+				}
 
-					}
-				end
+				// Sum of Pir over r
+				Pi[i] = Pi[i] + Pir
+			}
+
+			// Mean of Pir
+			Pi[i] = Pi[i] / R
+		}
+
+		// 	1717
+
+		// Calculate log-likelihood for each individual
+		for(i = 1; i <= nobs; i++) {
+			llf[i] = ln(Pi[i])
+		}
+		// 	printf("llf = %f\n", sum(llf))
+		// 	printf("i = %d done \n", i)
+
+	}
+end

@@ -1,0 +1,13 @@
+v 3
+
+d Stata commands to estimate the panel data stochastic frontier models written and maintained by Oleg Badunenko
+p xtsf
+
+f xtsf/xtsf_p.ado
+f xtsf/xtsf_postestimation.sthlp
+f xtsf/xtsf.ado
+f xtsf/xtsf.sthlp
+f xtsf/xtsf-linux.plugin
+f xtsf/xtsf-mac-intel.plugin
+f xtsf/xtsf-mac-arm.plugin
+f xtsf/xtsf-win.plugin
