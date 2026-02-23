@@ -38,7 +38,7 @@ program define xtsf, eclass
 			eff_pers eff_tran theta_re
 
 
-		// handle specifications of uimean uilnvariance vitlnvariance
+		// handle specifications of uilnvariance vitlnvariance
 		foreach opt in uitlnvariance vitlnvariance uilnvariance vilnvariance {
 			if "``opt''" != "" {
 				local `opt'opt ``opt''
@@ -238,29 +238,107 @@ program define xtsf, eclass
 		else {
 			local cnames "`indepvars'"
 		}
+		
+		// map lnvariance options to components
+// local compname_ui  "uilnvariance"
+// local compname_vi  "vilnvariance"
+// local compname_uit "uitlnvariance"
+// local compname_vit "vitlnvariance"
+//
+// 		display 1
+//
+// // initialize names
+// local cnames_ui  ""
+// local cnames_vi  ""
+// local cnames_uit ""
+// local cnames_vit ""
+//
+// 		display 2
+//
+// // loop over components
+// foreach errorcomp in ui vi uit vit {
+//	
+// 	display 20
+//
+//     // identify the corresponding lnvariance option
+//
+// 		local optname `compname_`errorcomp''		
+// 		display 21
+//
+//     // the list of determinants
+//     local dets `"``optname''"'
+//		
+// 		display 22
+//
+//     // does the option have 'noconstant'?
+//     local nocns `"``optname'nocns''"'
+//		
+// 		display 23
+//
+//     // construct names
+//     if "`dets'" != "" {
+//
+//         local tmp ""
+//         foreach lname of local dets {
+//             local tmp "`tmp' ln[var(`errorcomp')]:`lname'"
+//         }
+//
+//         if "`nocns'" == "" {
+//             // include constant
+//             local cnames_`errorcomp' "`tmp' ln[var(`errorcomp')]:_cons"
+//         }
+//         else {
+//             // no constant
+//             local cnames_`errorcomp' "`tmp'"
+//         }
+//     }
+//     else {
+//         // no determinants ⇒ constant only
+//         local cnames_`errorcomp' "ln[var(`errorcomp')]:_cons"
+//     }
+// }
+//
+// // final ordering: ui, vi, uit, vit
+// local cnames "`cnames_ui' `cnames_vi' `cnames_uit' `cnames_vit'"
+//
+// display 3
+//
+// display "`cnames'"
+//
+// display 4
+
 
 		// handle error components
 
 		foreach errorcomp in ui uit vi vit {
-			if "`errcomplnvariance'" != "" {
-        local errcomplnvarianceN ""
-        foreach lname of local errcomplnvariance {
-					local errcomplnvarianceN "`errcomplnvarianceN' ln[var(`errorcomp')]:`lname'"
+			if "`errorcomp'lnvariance" != "" {
+// 				display "here 1"
+// 				display "`errorcomp'lnvariance"
+				local errorcomplnvariance "`errorcomp'lnvariance"
+				local errorcomplnvariance `"``errorcomplnvariance''"'
+        local errorcomplnvarianceN ""
+        foreach lname of local errorcomplnvariance {
+					local errorcomplnvarianceN "`errorcomplnvarianceN' ln[var(`errorcomp')]:`lname'"
         }
-        if "`errcomplnvariancenocns'" == "" {
-					local cnames_`errorcomp' "`cnames_`errorcomp'' `errcomplnvarianceN' ln[var(`errorcomp')]:_cons"
+        if "`errorcomplnvariancenocns'" == "" {
+					local cnames_`errorcomp' "`cnames_`errorcomp'' `errorcomplnvarianceN' ln[var(`errorcomp')]:_cons"
         }
         else {
-					local cnames_`errorcomp' "`cnames_`errorcomp'' `errcomplnvarianceN'"
+					local cnames_`errorcomp' "`cnames_`errorcomp'' `errorcomplnvarianceN'"
         }
 			}
 			else {
+// 				display "here 2"
+// 				display "`errorcomp'lnvariance"				
         local cnames_`errorcomp' "`cnames_`errorcomp'' ln[var(`errorcomp')]:_cons"
 			}
 		}
 
 		local cnames "`cnames' `cnames_vi' `cnames_ui' `cnames_vit' `cnames_uit'"
-		// 	display "`cnames'"
+		display "`cnames'"
+// 		display "1"
+			
+// 		exit()
 
 		//   matrix _lnls_192837465 = J(_n_192837465,1,17)
 
